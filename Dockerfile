@@ -16,7 +16,7 @@ RUN groupadd -g 568 kikoeru && \
     chown -R kikoeru:kikoeru /data && \
     mkdir /voice && \
     chown -R kikoeru:kikoeru /voice
-COPY entrypoint.sh /docker/entrypoint.sh
+COPY --chmod=755 entrypoint.sh /docker/entrypoint.sh
 USER kikoeru
 WORKDIR ${ROOT}
 EXPOSE 8888
