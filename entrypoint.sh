@@ -1,13 +1,16 @@
 #!/bin/bash
 set -Eeuo pipefail
 
+# initialize an empty database as default db
+node -e "require('./dist/server/database/schema.js').createSchema().then(() => process.exit(0));"
+
 mkdir -p /voice
 # set default voice location to /voice
 sed -i 's/"rootDir": ".*"/"rootDir": "\/voice"/' ${ROOT}/config.json
 
-# init db
-node ${ROOT}/dist/server/filesystem/scanner.js
-
+# mount existing config files in /data
+# if they don't exist we replace them with the defaults
+# generated above
 declare -A MOUNTS
 
 MOUNTS["${ROOT}/db.sqlite3"]="/data/db.sqlite3"
@@ -32,5 +35,8 @@ for to_path in "${!MOUNTS[@]}"; do
   fi
   echo Mounted $(basename "${from_path}")
 done
+
+# run scanner
+node ${ROOT}/dist/server/filesystem/scanner.js
 
 exec "$@"
